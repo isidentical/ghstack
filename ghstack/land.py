@@ -160,7 +160,11 @@ to complain to the ghstack authors.""")
             # TODO: regex here so janky
             base_ref = re.sub(r'/orig$', '/base', orig_ref)
             head_ref = re.sub(r'/orig$', '/head', orig_ref)
-            sh.git("push", remote_name, "--delete", orig_ref, base_ref, head_ref)
+            for branch in [orig_ref, base_ref, head_ref]:
+                try:
+                    sh.git("push", remote_name, "--delete", branch)
+                except BaseException as exc:
+                    print(f"Failed to delete branch {branch} on {remote_name}: {exc}")
 
     finally:
         sh.git("checkout", prev_ref)
